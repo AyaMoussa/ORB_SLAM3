@@ -60,7 +60,8 @@
 #include <iostream>
 
 #include "ORBextractor.h"
-
+#include "KeypointFilter.h" 
+#include "System.h"
 
 using namespace cv;
 using namespace std;
@@ -1109,8 +1110,8 @@ namespace ORB_SLAM3
             _descriptors.release();
         else
         {
-            _descriptors.create(nkeypoints, 32, CV_8U);
-            descriptors = _descriptors.getMat();
+           descriptors.create(nkeypoints, 32, CV_8U);
+           //descriptors = _descriptors.getMat();
         }
 
         //_keypoints.clear();
@@ -1163,7 +1164,28 @@ namespace ORB_SLAM3
                 i++;
             }
         }
-        //cout << "[ORBextractor]: extracted " << _keypoints.size() << " KeyPoints" << endl;
+        
+        if (ORB_SLAM3::System::filtered) {
+            std::string confidenceLevel = ORB_SLAM3::System::confidenceLevel;
+            FilterKeyPoints(_keypoints, descriptors, image, confidenceLevel);
+            _descriptors.create(_keypoints.size(), 32, CV_8U);
+            descriptors.copyTo(_descriptors.getMatRef()); 
+
+            vector<KeyPoint>& keypoints = _keypoints;
+            monoIndex = 0, stereoIndex = nkeypoints-1;
+
+            for (int i = 0; i < keypoints.size(); ++i) {
+                const cv::KeyPoint& keypoint = keypoints[i];
+                if (keypoint.pt.x >= vLappingArea[0] && keypoint.pt.x <= vLappingArea[1]) {
+                    stereoIndex--;
+                } else {
+                    monoIndex++;
+                }
+            }
+        }else{
+            descriptors.copyTo(_descriptors.getMatRef()); 
+        }
+       
         return monoIndex;
     }
 

@@ -12,11 +12,16 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall   -O3")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 add_definitions(-DCOMPILEDWITHC14)
 
+set(CMAKE_C_COMPILER_LAUNCHER ccache)
+set(CMAKE_CXX_COMPILER_LAUNCHER ccache)
+set(Torch_DIR ${PROJECT_SOURCE_DIR}/Thirdparty/libtorch/share/cmake/Torch)
+
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
+list(APPEND CMAKE_PREFIX_PATH "$ENV{TORCH_DIR}")
 
 find_package(OpenCV 4.4)
    if(NOT OpenCV_FOUND)
@@ -29,14 +34,18 @@ MESSAGE(${OpenCV_VERSION})
 find_package(Eigen3 3.1.0 REQUIRED)
 find_package(Pangolin REQUIRED)
 find_package(realsense2)
+find_package(Torch REQUIRED)
 
 include_directories(
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/include
 ${PROJECT_SOURCE_DIR}/include/CameraModels
+${PROJECT_SOURCE_DIR}/include/ConfidenceMaps
 ${PROJECT_SOURCE_DIR}/Thirdparty/Sophus
+${TORCH_INCLUDE_DIRS}
 ${EIGEN3_INCLUDE_DIR}
 ${Pangolin_INCLUDE_DIRS}
+${OpenCV_INCLUDE_DIRS}
 )
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
@@ -70,6 +79,7 @@ src/GeometricTools.cc
 src/TwoViewReconstruction.cc
 src/Config.cc
 src/Settings.cc
+src/ConfidenceMaps/KeypointFilter.cc
 include/System.h
 include/Tracking.h
 include/LocalMapping.h
@@ -99,7 +109,9 @@ include/GeometricTools.h
 include/TwoViewReconstruction.h
 include/SerializationUtils.h
 include/Config.h
-include/Settings.h)
+include/Settings.h
+include/ConfidenceMaps/KeypointFilter.h)
+
 
 add_subdirectory(Thirdparty/g2o)
 
@@ -123,10 +135,12 @@ if(realsense2_FOUND)
     )
 endif()
 
+#link_directories(${TORCH_LIBRARY_DIRS})
 
 # Build examples
 
 # RGB-D examples
+#[[
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/RGB-D)
 
 add_executable(rgbd_tum
@@ -173,17 +187,19 @@ if(realsense2_FOUND)
             Examples/Stereo/stereo_realsense_D435i.cc)
     target_link_libraries(stereo_realsense_D435i ${PROJECT_NAME})
 endif()
-
+]]
 #Monocular examples
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
 
+add_executable(mono_kitti
+        Examples/Monocular/mono_kitti.cc)
+target_link_libraries(mono_kitti ${PROJECT_NAME} ${OpenCV_LIBS} "${TORCH_LIBRARIES}")
+
+#[[
 add_executable(mono_tum
         Examples/Monocular/mono_tum.cc)
 target_link_libraries(mono_tum ${PROJECT_NAME})
 
-add_executable(mono_kitti
-        Examples/Monocular/mono_kitti.cc)
-target_link_libraries(mono_kitti ${PROJECT_NAME})
 
 add_executable(mono_euroc
         Examples/Monocular/mono_euroc.cc)
@@ -255,3 +271,4 @@ if(realsense2_FOUND)
             Examples/Calibration/recorder_realsense_T265.cc)
     target_link_libraries(recorder_realsense_T265 ${PROJECT_NAME})
 endif()
+]]
