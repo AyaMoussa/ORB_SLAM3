@@ -1,4 +1,17 @@
-# ORB-SLAM3
+### **Check below for original ORB_SLAM3 project readme file
+
+# Effect of Keypoint Confidence Maps on Visual Odometry
+**Author:** Aya Moussa
+### KITTI Dataset
+
+1. Execute below command. Change .yaml file according to the sequence number.
+
+    `cd /home/ORB_SLAM3`
+
+    `./Examples/Monocular/mono_kitti Vocabulary/ORBvoc.txt Examples/Monocular/KITTI00-02.yaml ~/data/dataset/sequences/00`
+2. Add `[--filter-by-confidence true|false] [--level 1|2|3]` to use [PixLoc](https://github.com/cvg/pixloc) filteration technique on keypoints 
+
+# **ORB-SLAM3
 
 ### V1.0, December 22th, 2021
 **Authors:** Carlos Campos, Richard Elvira, Juan J. Gómez Rodríguez, [José M. M. Montiel](http://webdiis.unizar.es/~josemari/), [Juan D. Tardos](http://webdiis.unizar.es/~jdtardos/).
