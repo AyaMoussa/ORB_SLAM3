@@ -33,10 +33,13 @@ void LoadImages(const string &strSequence, vector<string> &vstrImageFilenames,
 
 int main(int argc, char **argv)
 {
-    if(argc != 4)
+    if(argc < 4)
     {
-        cerr << endl << "Usage: ./mono_kitti path_to_vocabulary path_to_settings path_to_sequence" << endl;
+        cerr << endl << "Usage: ./mono_kitti path_to_vocabulary path_to_settings path_to_sequence [--filter-by-confidence true|false] [--level 1|2|3]" << endl;
         return 1;
+    }
+    else if(argc == 4){
+        cout << endl << "You can use the options [--filter-by-confidence true|false] [--level 1|2|3]" << endl;
     }
 
     // Retrieve paths to images
@@ -48,6 +51,47 @@ int main(int argc, char **argv)
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR,true);
+
+    if ((argc > 4) && string(argv[4]) == "--filter-by-confidence") {
+        if ((argc > 5) && string(argv[5]) == "true"){
+            ORB_SLAM3::System::filtered = true;
+            if ((argc > 6) && string(argv[6]) == "--level") {
+                if ((argc > 7) && string(argv[7]) == "1"){
+                    ORB_SLAM3::System::confidenceLevel = "coarse";
+                    cout << "confidence level set to level 1 -> coarse." << endl;
+                }
+                else if ((argc > 7) && string(argv[7]) == "2"){
+                    ORB_SLAM3::System::confidenceLevel = "medium";
+                    cout << "confidence level set to level 2 -> medium." << endl;
+                }
+                else if ((argc > 7) && string(argv[7]) == "3"){
+                    ORB_SLAM3::System::confidenceLevel = "fine";
+                    cout << "confidence level set to level 3 -> fine." << endl;
+                }
+                else if ((argc > 7) && string(argv[7]) == "4"){
+                    ORB_SLAM3::System::confidenceLevel = "fused";
+                    cout << "confidence level set to level 4 -> fused." << endl;
+                }
+                else {
+                    cerr << "Invalid option for confidence level please insert 1 for coarse, 2 for medium, 3 for fine, 4 for fused." << endl;
+                    return 1;
+                }
+            }else {
+                cout << "confidence level automaticaly set to level 3 -> fine." << endl;
+            }    
+        } else if((argc > 5) && string(argv[5]) == "false") {
+            ORB_SLAM3::System::filtered = false;
+        } else {
+            cerr << "Invalid option for filtering by confidence maps please insert true or false." << endl;
+            return 1;
+        }
+       
+    } else {
+        cout << "Filtering using Confidence Maps is turned off automatically, to turn on use [--filter-by-confidence true|false] [--level 1|2|3]." << endl;
+    }
+       
+
+
     float imageScale = SLAM.GetImageScale();
 
     // Vector for tracking time statistics

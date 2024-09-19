@@ -185,12 +185,14 @@ public:
     void ChangeDataset();
 
     float GetImageScale();
+    static bool filtered;
+    static std::string confidenceLevel;
 
 #ifdef REGISTER_TIMES
     void InsertRectTime(double& time);
     void InsertResizeTime(double& time);
     void InsertTrackTime(double& time);
-#endif
+#endif 
 
 private:
 
