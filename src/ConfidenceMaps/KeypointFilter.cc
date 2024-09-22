@@ -9,6 +9,8 @@ static std::once_flag modelLoadFlag;
 void loadModel() {
     try {
         globalModel = torch::jit::load("src/ConfidenceMaps/confidences_model.pt");
+        globalModel.to(torch::kCUDA);
+        torch::NoGradGuard no_grad;
         std::cout << "Model loaded successfully." << std::endl;
     } catch (const c10::Error& e) {
         std::cerr << "Error loading the model: " << e.what() << std::endl;
@@ -87,12 +89,23 @@ void FilterKeyPoints(std::vector<cv::KeyPoint>& _keypoints, cv::Mat& descriptors
         level = fine;
     }
 
+    torch::Tensor median_tensor = level.median();
+    float threshold = median_tensor.item<float>();
+    // Round to two decimal places
+    float rounded_median = std::round(threshold * 100.0) / 100.0;
+
+    // Printing the results
+    std::cout << "Median value: " << threshold << std::endl;
+    std::cout << "Rounded Median: " << rounded_median << std::endl;
+
+
     level = level.to(torch::kCPU).contiguous();
 
     auto confidence = level.accessor<float, 2>(); 
             
     std::vector<cv::KeyPoint> filteredKeypoints;
     cv::Mat filteredDescriptors;
+
     for (size_t i = 0; i < _keypoints.size(); ++i)  {
         cv::KeyPoint kp = _keypoints[i];
         int x = static_cast<int>(std::round(kp.pt.x));
@@ -101,7 +114,7 @@ void FilterKeyPoints(std::vector<cv::KeyPoint>& _keypoints, cv::Mat& descriptors
         // Check bounds
         if (y >= 0 && y < confidence.size(0) && x >= 0 && x < confidence.size(1)) {
             float confValue = confidence[y][x];
-            if (confValue > 0.5) {
+            if (confValue > threshold) {
                 filteredKeypoints.push_back(kp);
                 filteredDescriptors.push_back(descriptors.row(i));
             }
