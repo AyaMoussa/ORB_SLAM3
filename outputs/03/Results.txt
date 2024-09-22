@@ -1,0 +1,62 @@
+###
+
+ORBTrajectory.kitti ~/data/KITTII/Odometry/dataset/poses/03.txt --correct_scale -p --plot_mode
+=xz
+RPE w.r.t. translation part (m)
+for delta = 1 (frames) using consecutive pairs
+(scale corrected)
+
+       max      0.328941
+      mean      0.031751
+    median      0.022763
+       min      0.001357
+      rmse      0.044849
+       sse      1.599067
+       std      0.031675
+
+###
+
+ConfidenceTrajectory03.kitti ~/data/KITTII/Odometry/dataset/poses/03.txt --correct_scale -p --plot_
+mode=xz
+RPE w.r.t. translation part (m)
+for delta = 1 (frames) using consecutive pairs
+(scale corrected)
+
+       max      0.152756
+      mean      0.026103
+    median      0.019045
+       min      0.001023
+      rmse      0.034737
+       sse      0.959310
+       std      0.022920
+
+###
+
+ORBTrajectory.kitti ~/data/KITTII/Odometry/dataset/poses/03.txt --correct_scale -p --plot_mode
+=xz
+APE w.r.t. translation part (m)
+(scale corrected)
+
+
+       max      6.256946
+      mean      5.159657
+    median      5.208759
+       min      0.504238
+      rmse      5.246875
+       sse      21913.635518
+       std      0.952698
+
+###
+
+ConfidenceTrajectory.kitti ~/data/KITTII/Odometry/dataset/poses/03.txt --correct_scale -p --plot_
+mode=xz
+APE w.r.t. translation part (m)
+(scale corrected)
+
+       max      9.604042
+      mean      7.876353
+    median      7.522956
+       min      3.965777
+      rmse      7.925805
+       sse      50003.435927
+       std      0.883995

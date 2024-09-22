@@ -78,7 +78,7 @@ int main(int argc, char **argv)
                 }
             }else {
                 cout << "confidence level automaticaly set to level 3 -> fine." << endl;
-            }    
+            }   
         } else if((argc > 5) && string(argv[5]) == "false") {
             ORB_SLAM3::System::filtered = false;
         } else {
@@ -89,8 +89,6 @@ int main(int argc, char **argv)
     } else {
         cout << "Filtering using Confidence Maps is turned off automatically, to turn on use [--filter-by-confidence true|false] [--level 1|2|3]." << endl;
     }
-       
-
 
     float imageScale = SLAM.GetImageScale();
 
@@ -192,7 +190,8 @@ int main(int argc, char **argv)
     cout << "mean tracking time: " << totaltime/nImages << endl;
 
     // Save camera trajectory
-    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");    
+    
+    SLAM.SaveTrajectoryEuRoC("Trajectory.txt");   
 
     return 0;
 }
