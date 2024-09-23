@@ -1167,7 +1167,8 @@ namespace ORB_SLAM3
         
         if (ORB_SLAM3::System::filtered) {
             std::string confidenceLevel = ORB_SLAM3::System::confidenceLevel;
-            FilterKeyPoints(_keypoints, descriptors, image, confidenceLevel);
+            std::optional<float> threshold = ORB_SLAM3::System::threshold;
+            FilterKeyPoints(_keypoints, descriptors, image, confidenceLevel, threshold);
             _descriptors.create(_keypoints.size(), 32, CV_8U);
             descriptors.copyTo(_descriptors.getMatRef()); 
 

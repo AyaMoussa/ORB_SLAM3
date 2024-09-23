@@ -35,11 +35,11 @@ int main(int argc, char **argv)
 {
     if(argc < 4)
     {
-        cerr << endl << "Usage: ./mono_kitti path_to_vocabulary path_to_settings path_to_sequence [--filter-by-confidence true|false] [--level 1|2|3]" << endl;
+        cerr << endl << "Usage: ./mono_kitti path_to_vocabulary path_to_settings path_to_sequence [--filter-by-confidence true|false] [--level 1|2|3] [--threshold 0.0-0.99f]" << endl;
         return 1;
     }
     else if(argc == 4){
-        cout << endl << "You can use the options [--filter-by-confidence true|false] [--level 1|2|3]" << endl;
+        cout << endl << "You can use the options [--filter-by-confidence true|false] [--level 1|2|3] [--threshold 0.0-0.99f]" << endl;
     }
 
     // Retrieve paths to images
@@ -78,7 +78,12 @@ int main(int argc, char **argv)
                 }
             }else {
                 cout << "confidence level automaticaly set to level 3 -> fine." << endl;
-            }   
+            }
+            if((argc > 8) && string(argv[8]) == "--threshold")   {
+                if((argc > 9) && (argv[9])!=nullptr){
+                    ORB_SLAM3::System::threshold = std::stof(argv[9]);
+                }
+            }
         } else if((argc > 5) && string(argv[5]) == "false") {
             ORB_SLAM3::System::filtered = false;
         } else {

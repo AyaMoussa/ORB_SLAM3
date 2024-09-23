@@ -9,7 +9,7 @@
     `cd /home/ORB_SLAM3`
 
     `./Examples/Monocular/mono_kitti Vocabulary/ORBvoc.txt Examples/Monocular/KITTI00-02.yaml ~/data/dataset/sequences/00`
-2. Add `[--filter-by-confidence true|false] [--level 1|2|3]` to use [PixLoc](https://github.com/cvg/pixloc) filteration technique on keypoints 
+2. Add `[--filter-by-confidence true|false] [--level 1|2|3|4] [--threshold 0.0-0.99f]` to use [PixLoc](https://github.com/cvg/pixloc) filteration technique on keypoints 
 
 # **ORB-SLAM3
 
