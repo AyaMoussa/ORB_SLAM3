@@ -187,6 +187,7 @@ public:
     float GetImageScale();
     static bool filtered;
     static std::string confidenceLevel;
+    static std::optional<float> threshold;
 
 #ifdef REGISTER_TIMES
     void InsertRectTime(double& time);

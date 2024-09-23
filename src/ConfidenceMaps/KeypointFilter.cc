@@ -34,7 +34,7 @@ torch::Tensor convertMatToTensor(const cv::Mat& image) {
 }
 
 // Implementation of the FilterKeyPoints function
-void FilterKeyPoints(std::vector<cv::KeyPoint>& _keypoints, cv::Mat& descriptors, cv::Mat image, const std::string& confidenceLevel) {
+void FilterKeyPoints(std::vector<cv::KeyPoint>& _keypoints, cv::Mat& descriptors, cv::Mat image, const std::string& confidenceLevel, std::optional<float> threshold) {
     
     std::call_once(modelLoadFlag, loadModel);
     std::cout << "Using the model in recurrent function..." << std::endl;
@@ -90,13 +90,17 @@ void FilterKeyPoints(std::vector<cv::KeyPoint>& _keypoints, cv::Mat& descriptors
     }
 
     torch::Tensor median_tensor = level.median();
-    float threshold = median_tensor.item<float>();
+    if(!threshold.has_value()){
+        threshold = std::round(median_tensor.item<float>() * 100.0) / 100.0;
+    }
+    else{
+        threshold = threshold.value();
+    }
+    
     // Round to two decimal places
-    float rounded_median = std::round(threshold * 100.0) / 100.0;
 
     // Printing the results
-    std::cout << "Median value: " << threshold << std::endl;
-    std::cout << "Rounded Median: " << rounded_median << std::endl;
+    std::cout << "Median value: " << threshold.value() << std::endl;
 
 
     level = level.to(torch::kCPU).contiguous();
@@ -114,7 +118,7 @@ void FilterKeyPoints(std::vector<cv::KeyPoint>& _keypoints, cv::Mat& descriptors
         // Check bounds
         if (y >= 0 && y < confidence.size(0) && x >= 0 && x < confidence.size(1)) {
             float confValue = confidence[y][x];
-            if (confValue > threshold) {
+            if (confValue > threshold.value()) {
                 filteredKeypoints.push_back(kp);
                 filteredDescriptors.push_back(descriptors.row(i));
             }

@@ -37,6 +37,7 @@ namespace ORB_SLAM3
 {
 bool System::filtered = false;
 std::string System::confidenceLevel= "fine"; 
+std::optional<float> System::threshold = std::nullopt;
 
 Verbose::eLevel Verbose::th = Verbose::VERBOSITY_NORMAL;
 
